@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.BaseMethods;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
+import com.example.myapplication.Database.DataApplication;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -34,7 +35,12 @@ public class Utils {
     private ArrayAdapter<String> adapter;
     private String sInfo;
 
-    //下拉列表的选择
+    /**
+     * 下拉列表的监听；
+     * @param list_ele 包含下拉列表项的集合
+     * @param spinnerEle 进行监听的spinner控件；
+     * @param name
+     */
     public void listSelect(final List<String> list_ele, Spinner spinnerEle, final String name) {
         //第二步：为下拉列表定义一个适配器
         adapter = new ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, list_ele);
@@ -50,7 +56,6 @@ public class Utils {
                 sInfo = adapterView.getItemAtPosition(i).toString();
 //                    app.setData(name,sInfo);
                 dataApplication.setValue(name, sInfo);
-
             }
 
             @Override
@@ -117,27 +122,20 @@ public class Utils {
         return value;
     }
 
-    //把字符串转成ascii之后转成字符数组
-    public static char[] strToCharList(String str,int length){
-        byte[] bytes = str.getBytes();
-        String ret = "";
-        for(int i=0;i< bytes.length;i++){
-            String hex = Integer.toHexString(bytes[i] & 0xFF);
-            if(hex.length()==1){
-                hex = "0" + hex;
-            }
-            ret+=hex;
-        }
-//        System.out.println(ret);
-        char[] value = ret.toCharArray();
-//        char[] result = new char[length];
-//        if(value.length != 0 ){
-//            for(int i=0;i<value.length;i++){
-//                result[i] = value[i];
+//    //把字符串转成ascii之后转成字符数组
+//    public static char[] strToCharList(String str,int length){
+//        byte[] bytes = str.getBytes();
+//        String ret = "";
+//        for(int i=0;i< bytes.length;i++){
+//            String hex = Integer.toHexString(bytes[i] & 0xFF);
+//            if(hex.length()==1){
+//                hex = "0" + hex;
 //            }
+//            ret+=hex;
 //        }
-        return value;
-    }
+//        char[] value = ret.toCharArray();
+//        return value;
+//    }
     //把整型转成字符数组
     public static char[] intToCharList(int num){
         String hex = num+"";
@@ -149,58 +147,30 @@ public class Utils {
     }
 
 
-        //把字符串转成二进制数
-    public static byte[] hex2byte(String str) {
-        if (str == null){
-            return null;
-        }
-        str = str.trim();
-        int len = str.length();
-
-        if (len == 0 || len % 2 == 1){
-            return null;
-        }
-        byte[] b = new byte[len / 2];
-        try {
-            for (int i = 0; i < str.length(); i += 2) {
-                b[i / 2] = (byte) Integer.decode("0X" + str.substring(i, i + 2)).intValue();
-            }
-            return b;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
-    // 二进制转字符串
-    public static String byte2hex(byte[] b)
-    {
-        StringBuffer sb = new StringBuffer();
-        String stmp = "";
-        for (int i = 0; i < b.length; i++) {
-            stmp = Integer.toHexString(b[i] & 0XFF);
-            if (stmp.length() == 1){
-                sb.append("0" + stmp);
+    /***
+     * 定义char 数组长度，不够补0；
+     * * @param oldChar
+     * @param length
+     * @return
+     */
+    public char[] addZeorChar(char[] oldChar,int length){
+        char[] newChar = new char[length];
+        int oldLen = oldChar.length;
+        for(int i=0;i<length;i++){
+            if(i> oldLen-1){
+                newChar[i] = 0;
             }else{
-                sb.append(stmp);
+                newChar[i] = oldChar[i];
             }
-
         }
-        return sb.toString();
+        return newChar;
     }
+
 
     /**
-     * byte数组转换为二进制字符串,每个字节以","隔开
-     **/
-    public static String byteArrToBinStr(byte[] b) {
-        StringBuffer result = new StringBuffer();
-        for (int i = 0; i < b.length; i++) {
-            result.append(Long.toString(b[i] & 0xff, 2) + ",");
-        }
-        return result.toString().substring(0, result.length() - 1);
-    }
-
-    //ping ip查看情况
+     * ping ip,查看当前是否和ip相连；
+     * @param ip
+     */
     public void isAvailableByPing(String ip) {
                 Toast.makeText(context,"查看IP界面",Toast.LENGTH_SHORT).show();
         //网络操作应在子线程中操作，避免阻塞UI线程，导致ANR
@@ -220,7 +190,6 @@ public class Utils {
                 }else{
                     subHandler.sendEmptyMessage(4);
                 }
-
             }
         }).start();
     }
@@ -228,6 +197,10 @@ public class Utils {
     Boolean pingResult;
     private String status;
     private String message;
+
+    /**
+     * 用于在多线程用提醒用户
+     */
     public Handler subHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -308,6 +281,11 @@ public class Utils {
     }
 
 
+    /**
+     * 设置下拉选项框的默认值
+     * @param spinner
+     * @param value
+     */
     public void setSpinnerDefaultValue(Spinner spinner, String value) {
         SpinnerAdapter apsAdapter = spinner.getAdapter();
         int size = apsAdapter.getCount();
@@ -320,9 +298,73 @@ public class Utils {
         }
     }
 
+    //获取固定长度的字符，不足后面补0
+    public static String formatStr(String str, int length) {
+        int strLen;
+        if (str == null) {
+            strLen = 0;
+        }else{
+            strLen= str.length();
+        }
 
-    public void writeFile(View view){
-
+        if (strLen == length) {
+            return str;
+        } else if (strLen < length) {
+            int temp = length - strLen;
+            String tem = "";
+            for (int i = 0; i < temp; i++) {
+                tem = tem + '0';
+            }
+            return str + tem;
+        }else{
+            return str.substring(0,length);
+        }
     }
+
+    /**
+     * 字节数组的拼接
+     * @param bt1 拼接在前面的数组
+     * @param bt2 拼接在后面的数组
+     * @return  拼接后的数组
+     */
+    public static byte[] byteMerger(byte[] bt1, byte[] bt2){
+        byte[] bt3 = new byte[bt1.length+bt2.length];
+        System.arraycopy(bt1, 0, bt3, 0, bt1.length);
+        System.arraycopy(bt2, 0, bt3, bt1.length, bt2.length);
+        return bt3;
+    }
+
+    /**
+     * 字节数组的打印
+     * @param byteArray 需要打印的字节数组
+     * @return
+     */
+    public static String toHexString(byte[] byteArray) {
+        if (byteArray == null || byteArray.length < 1)
+            throw new IllegalArgumentException("this byteArray must not be null or empty");
+        final StringBuilder hexString = new StringBuilder();
+        for (int i = 0; i < byteArray.length; i++) {
+            if ((byteArray[i] & 0xff) < 0x10)//0~F前面不零
+                hexString.append("0");
+            hexString.append(Integer.toHexString(0xFF & byteArray[i]));
+        }
+        return hexString.toString().toLowerCase();
+    }
+
+    /**
+     * 把字符串转成固定长度字节数组，不足的前面补零
+     */
+    public static byte[] createByte(String oldString,int len){
+        byte[] result = new byte[len];
+        for(int i =0;i<len;i++){
+            if(i<oldString.length()){
+                result[i] = oldString.getBytes()[i];
+            }else{
+                result[i]=0;
+            }
+        }
+        return result;
+    }
+
 
 }

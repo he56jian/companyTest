@@ -8,7 +8,10 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.myapplication.com.example.myapplication.activity.ChatManager;
+import com.example.myapplication.ConnectSocket.ChatManager;
+import com.example.myapplication.Database.DataApplication;
+import com.example.myapplication.Fragment.ConnectFragment;
+import com.example.myapplication.Fragment.ParamFragment;
 
 public class FragmentMain extends FragmentActivity implements View.OnClickListener{
 
@@ -16,6 +19,7 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
     FrameLayout show_des;
     ParamFragment paramFragment;
     String IP = "192.168.0.1";
+//    String IP = "192.168.1.194";
     int PORT = 5001;
     char[] chars=  new char[]{'#','0','1','#'};
     @Override
@@ -26,12 +30,11 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
         getSupportFragmentManager().beginTransaction().replace(R.id.show_des, paramFragment).commit();
         DataApplication dataApplication = DataApplication.getDataApplication();
         ChatManager.getCM().connect(this, IP, PORT);
-        System.out.println("运行了FragmentMain界面");
         new Thread() {
             @Override
             public void run() {
                 while (true) {
-                    if (dataApplication.sta_connect == 1) {
+                    if (dataApplication.getStaConnect() == 1) {
 //                        ChatManager.getCM().send(chars);               //一开始就发送#01#
                         ChatManager.getCM().sendCharToStream(chars,true);
                         break;
@@ -43,10 +46,10 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
         show_des = findViewById(R.id.show_des);
         btn_parcam = findViewById(R.id.btn_parcam);
         btn_connect = findViewById(R.id.btn_connect);
-        btn_other = findViewById(R.id.btn_other);
+//        btn_other = findViewById(R.id.btn_other);
         btn_parcam.setOnClickListener(this);
         btn_connect.setOnClickListener(this);
-        btn_other.setOnClickListener(this);
+//        btn_other.setOnClickListener(this);
     }
 
     @Override
@@ -60,8 +63,8 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
                 ConnectFragment con = new ConnectFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.show_des, con).commit();
                 break;
-            case R.id.btn_other:
-                break;
+//            case R.id.btn_other:
+//                break;
 
         }
     }
