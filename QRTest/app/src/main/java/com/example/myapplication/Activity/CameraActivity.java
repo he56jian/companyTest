@@ -59,6 +59,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Ad
      */
     private void getParam() {
         cameraMode = dataApplication.getCameraMode();
+
         cameraModeIndex = dataApplication.getCameraModeIndex();
         photoBurst = dataApplication.getPhotoBurst();
         photoBurstIndex = dataApplication.getPhotoBurstIndex();
@@ -116,10 +117,12 @@ public class CameraActivity extends Activity implements View.OnClickListener, Ad
                 }
             }
         });
-        if(cameraMode == "photo"){
-            rb_photo.setChecked(true);
-        }else{
+
+        System.out.println("cameraActivity的cameraMode:"+cameraModeIndex);
+        if(cameraModeIndex ==1){
             rb_video.setChecked(true);
+        }else{
+            rb_photo.setChecked(true);
         }
     }
 
@@ -317,6 +320,24 @@ public class CameraActivity extends Activity implements View.OnClickListener, Ad
                 dataApplication.setShutterSpeedIndex(shutterSpeedIndex);
                 dataApplication.setFlashPower(flashPower);
                 dataApplication.setFlashPowerIndex(flashPowerIndex);
+
+                dataApplication.saveString("videoSize",videoSize);
+                dataApplication.saveInt("cameraModeIndex",cameraModeIndex);
+                dataApplication.saveInt("videoSizeIndex",videoSizeIndex);
+                dataApplication.saveString("videoLength",videoLength);
+                dataApplication.saveInt("videoLengthIndex",videoLengthIndex);
+                dataApplication.saveString("photoSize",photoSize);
+                dataApplication.saveInt("photoSizeIndex",photoSizeIndex);
+                dataApplication.saveString("photoBurst",photoBurst);
+                dataApplication.saveInt("photoBurstIndex",photoBurstIndex);
+                dataApplication.saveString("burstSpeed",burstSpeed);
+                dataApplication.saveInt("burstSpeedIndex",burstSpeedIndex);
+                dataApplication.saveString("sendingOption",sendingOption);
+                dataApplication.saveInt("sendingOptionIndex",sendingOptionIndex);
+                dataApplication.saveString("shutterSpeed",shutterSpeed);
+                dataApplication.saveInt("shutterSpeedIndex",shutterSpeedIndex);
+                dataApplication.saveString("flashPower",flashPower);
+                dataApplication.saveInt("flashPowerIndex",flashPowerIndex);
                 break;
         }
     }

@@ -22,13 +22,14 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
 //    String IP = "192.168.1.194";
     int PORT = 5001;
     char[] chars=  new char[]{'#','0','1','#'};
+    DataApplication dataApplication;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_main);
         ParamFragment paramFragment = new ParamFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.show_des, paramFragment).commit();
-        DataApplication dataApplication = DataApplication.getDataApplication();
+        dataApplication = DataApplication.getDataApplication();
         ChatManager.getCM().connect(this, IP, PORT);
         new Thread() {
             @Override
@@ -42,7 +43,6 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
                 }
             }
         }.start();
-
         show_des = findViewById(R.id.show_des);
         btn_parcam = findViewById(R.id.btn_parcam);
         btn_connect = findViewById(R.id.btn_connect);
@@ -50,7 +50,11 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
         btn_parcam.setOnClickListener(this);
         btn_connect.setOnClickListener(this);
 //        btn_other.setOnClickListener(this);
+        //对数据进行操作
+
     }
+
+
 
     @Override
     public void onClick(View view) {
@@ -60,6 +64,7 @@ public class FragmentMain extends FragmentActivity implements View.OnClickListen
                 getSupportFragmentManager().beginTransaction().replace(R.id.show_des, paramFragment).commit();
                 break;
             case R.id.btn_connect:
+
                 ConnectFragment con = new ConnectFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.show_des, con).commit();
                 break;

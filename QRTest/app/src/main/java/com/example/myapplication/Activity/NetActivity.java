@@ -49,6 +49,10 @@ public class NetActivity extends Activity implements AdapterView.OnItemSelectedL
                 dataApplication.setSendMode(sendMode);
                 dataApplication.setRemoteControl(remoteControl);
                 dataApplication.setRemoteControlIndex(remoteControlIndex);
+
+                dataApplication.saveString("sendMode",sendMode);
+                dataApplication.saveString("remoteControl",remoteControl);
+                dataApplication.saveInt("remoteControlIndex",remoteControlIndex);
             }
         });
 
@@ -64,21 +68,6 @@ public class NetActivity extends Activity implements AdapterView.OnItemSelectedL
         spinner_control.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dataApplication.getRemoteControlList()));
         spinner_control.setOnItemSelectedListener(this);
         spinner_control.setSelection(remoteControlIndex);
-        System.out.println("----------------"+remoteControlIndex);
-//        //photo size选择器选择监听
-//        if (list_control.isEmpty()) {
-//            list_control.add("Realtime");
-//            list_control.add("Delay 0.5H");
-//            list_control.add("Delay 1H");
-//            list_control.add("Delay 2H");
-//            list_control.add("Delay 3H");
-//            list_control.add("Delay 4H");
-//            list_control.add("Delay 6H");
-//            list_control.add("Delay 12H");
-//            list_control.add("Delay 24H");
-//        }
-//        //photo size选择器选择监听
-//        utils.listSelect(list_control, spinner_control, "remoteControl");
     }
 
     @Override

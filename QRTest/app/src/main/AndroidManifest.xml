@@ -35,13 +35,11 @@
         <activity
             android:label="Back"
             android:name=".Activity.CameraActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activity.MainActivity"></meta-data>
+
         </activity>
         <activity
             android:name="com.example.myapplication.Activity.ShowQRCodeActivity"/>
-        <activity
-            android:name="com.example.myapplication.Activity.MainActivity"/>
+
         <activity
             android:name="com.example.myapplication.Activity.SysActivity"/>
         <activity
@@ -53,8 +51,7 @@
             android:name="com.example.myapplication.Activity.WorkTimeActivity"/>
         <activity
             android:name="com.example.myapplication.com.example.myapplication.activity.ConnectScoket"/>
-        <activity
-            android:name="com.example.myapplication.ConnectSetting"/>
+
         <activity
             android:name="com.example.myapplication.Activity.SimInfoActivity"/>
 

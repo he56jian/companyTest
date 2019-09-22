@@ -220,6 +220,13 @@ public class TriggerModeActivity extends Activity implements AdapterView.OnItemS
                 dataApplication.setTriggerSenIndex(triggetSenIndex);
                 dataApplication.setTriggerTimelapse(triggerTimelapse);
                 dataApplication.setTriggerTimelapseIndex(triggerTimelapseIndex);
+
+                dataApplication.saveString("triggerPir",triggerPir);
+                dataApplication.saveInt("triggerPirIndex",triggerPirIndex);
+                dataApplication.saveString("triggerSen",triggetSen);
+                dataApplication.saveInt("triggerSenIndex",triggetSenIndex);
+                dataApplication.saveString("triggerTimelapse",triggerTimelapse);
+                dataApplication.saveInt("triggerTimelapseIndex",triggerTimelapseIndex);
                 break;
         }
     }

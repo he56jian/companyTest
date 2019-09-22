@@ -17,11 +17,11 @@ import com.example.myapplication.R;
 
 public class SysActivity extends Activity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     private DataApplication dataApplication;
-    private Switch switch_password, switch_rename,switch_overwrite;
+    private Switch switch_password, switch_rename, switch_overwrite;
     private EditText edit_password, edit_rename;
     private Button button_save;
-    private String rename, password;
-    private int overWrite,sta_rename,sta_password;
+    private String rename, password, sta_rename, sta_password;
+    private int overWrite;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class SysActivity extends Activity implements CompoundButton.OnCheckedCha
 //        getActionBar().setDisplayHomeAsUpEnabled(true);
         init();
     }
-
+    int sta_renameIndex,sta_passwdIndex;
     private void init() {
         switch_password = findViewById(R.id.switch_password);
         switch_rename = findViewById(R.id.switch_rename);
@@ -47,25 +47,29 @@ public class SysActivity extends Activity implements CompoundButton.OnCheckedCha
         button_save = findViewById(R.id.button_save);
         button_save.setOnClickListener(this);
 
-
         sta_rename = dataApplication.getStaRename();                //获取记录着的密码开关；
         sta_password = dataApplication.getStaPassword();
         overWrite = dataApplication.getOverWrite();
+        sta_renameIndex = dataApplication.getStaNameIndex();
+        sta_passwdIndex = dataApplication.getStaPasswordIndex();
 
-        if (sta_rename == 1) {                             //如果密码开关是开着的
+        if (sta_renameIndex==1) {                             //如果密码开关是开着的
             rename = dataApplication.getRename();
             edit_rename.setText(rename);
             Toast.makeText(this, "rename：" + rename, Toast.LENGTH_SHORT).show();
             switch_rename.setChecked(true);
         }
-        if (sta_password == 1) {
+        if (sta_passwdIndex ==1) {
+            System.out.println("当前sta_passworde开关："+sta_password);
             password = dataApplication.getPassword();
             edit_password.setText(password);
             switch_password.setChecked(true);
         }
-        if(overWrite == 1){
+
+
+        if (overWrite == 1) {
             switch_overwrite.setChecked(true);
-        }else{
+        } else {
             switch_overwrite.setChecked(false);
         }
     }
@@ -87,19 +91,15 @@ public class SysActivity extends Activity implements CompoundButton.OnCheckedCha
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         switch (compoundButton.getId()) {
             case R.id.switch_rename:
-                dataApplication.setStaName(b);
-                sta_rename=(b?1:0);
                 //如果当前为on
-                if (sta_rename == 1) {
+                if (b) {
                     edit_rename.setVisibility(View.VISIBLE);
-
-                    dataApplication.setStaName(true);
+                    dataApplication.setStaNameIndex(1);
                     edit_rename.setKeyListener(new DigitsKeyListener() {
                         @Override
                         public int getInputType() {
                             return InputType.TYPE_TEXT_VARIATION_PASSWORD;
                         }
-
                         @Override
                         protected char[] getAcceptedChars() {
                             char[] data = getStringData(R.string.wordAndNum).toCharArray();
@@ -107,25 +107,23 @@ public class SysActivity extends Activity implements CompoundButton.OnCheckedCha
                         }
                     });
                 } else {
+                    dataApplication.setStaNameIndex(0);
                     edit_rename.setVisibility(View.INVISIBLE);
-                    edit_rename.setText("");
-                    dataApplication.setStaName(false);
                 }
+                dataApplication.setStaName(""+b);
                 break;
             case R.id.switch_password:
-                dataApplication.setStaPassword(b);
-                sta_password=(b?1:0);
-                if (sta_password == 1) {
+                if (b) {
                     edit_password.setVisibility(View.VISIBLE);
-                    dataApplication.setStaPassword(true);               //设置密码开关状态
+                    dataApplication.setStaPasswordIndex(1);
                 } else {
+                    dataApplication.setStaPasswordIndex(0);
                     edit_password.setVisibility(View.INVISIBLE);            //关掉开关
-                    edit_password.setText("");
-                    dataApplication.setStaName(false);
                 }
+                dataApplication.setStaPassword(""+b);
                 break;
             case R.id.switch_overwrite:
-                dataApplication.setOverWrite(b);
+                dataApplication.setOverWrite(b+"");
                 break;
         }
     }
@@ -140,23 +138,17 @@ public class SysActivity extends Activity implements CompoundButton.OnCheckedCha
             case R.id.button_save:
                 rename = edit_rename.getText().toString();
                 password = edit_password.getText().toString();
-//                if (sta_rename == 1) {      //如果是on模式
-//                    if(rename.length()==0){
-//                        dataApplication.setRename("uovision");
-//                    }else{
-                        dataApplication.setRename(rename);
-//                    }
-//                }
-//                if (sta_password ==1 ) {
-//                    if(password.length()==0){
-//                        dataApplication.setPassword("0000");
-//                    }else{
+                dataApplication.setRename(rename);
+                dataApplication.setPassword(password);
+                dataApplication.setPassword(password);
+                dataApplication.setPassword(password);
 
-                    dataApplication.setPassword(password);
-//                    }
-//                }else{
-//                    dataApplication.setPassword("0000");
-//                }
+                dataApplication.saveString("rename",rename);
+                dataApplication.saveString("password",password);
+                dataApplication.saveString("staName",dataApplication.getStaRename());
+                dataApplication.saveString("staPassword",dataApplication.getStaPassword());
+                dataApplication.saveInt("staNameIndex",dataApplication.getStaNameIndex());
+                dataApplication.saveInt("staPasswdIndex",dataApplication.getStaPasswordIndex());
                 break;
         }
     }

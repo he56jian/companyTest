@@ -32,6 +32,16 @@ public class SimInfoActivity extends Activity implements View.OnClickListener {
         edit_sim_acount = findViewById(R.id.edit_sim_acount);
         edit_sim_passwd = findViewById(R.id.edit_sim_passwd);
 
+       if( data_sim_apn == null){
+           data_sim_apn = "";
+       }
+        if( data_sim_acount == null){
+            data_sim_acount = "";
+        }
+        if( data_sim_passwd == null){
+            data_sim_passwd = "";
+        }
+
         edit_sim_apn.setText(data_sim_apn);
         edit_sim_acount.setText(data_sim_acount);
         edit_sim_passwd.setText(data_sim_passwd);
@@ -52,6 +62,10 @@ public class SimInfoActivity extends Activity implements View.OnClickListener {
                 dataApplication.setSim_apn(sim_apn);
                 dataApplication.setSim_acount(sim_acount);
                 dataApplication.setSim_passwd(sim_passwd);
+
+                dataApplication.saveString("sim_apn",sim_apn);
+                dataApplication.saveString("sim_acount",sim_acount);
+                dataApplication.saveString("sim_passwd",sim_passwd);
                 break;
         }
     }

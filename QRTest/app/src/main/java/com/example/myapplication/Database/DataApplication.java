@@ -2,18 +2,22 @@ package com.example.myapplication.Database;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.provider.Settings;
 
 import com.example.myapplication.BaseMethods.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DataApplication {
     private String cameraMode, photoSize, photoBurst, burstSpeed, sendingOption, shutterSpeed, flashPower, videoSize, videoLength;
     private String triggerPir, triggerTimelapse, triggerSen, wortTime1, workTime2, workTime3, workTime4, sendMode, remoteControl, rename;
-    private String password, sim_apn, sim_acount, sim_passwd;
-    private Boolean staName, staPassword , overWrite, protecte;
+    private String password, sim_apn, sim_acount, sim_passwd,staName,staPassword,overWrite;
+    private Boolean  protecte = false;
     private static DataApplication dataApplication = new DataApplication();
     private String IP;
     private int PORT;
@@ -25,8 +29,22 @@ public class DataApplication {
     private byte[] Sim_acount = new byte[32];
     private byte[] Sim_passwd = new byte[32];
     private byte[] resultByte;
+    private String[] paramlistName = {
+            "cameraMode", "photoSize", "photoBurst", "burstSpeed", "sendingOption", "shutterSpeed", "flashPower", "videoSize", "videoLength",
+            "triggerSen", "triggerPir", "triggerTimelapse", "sendMode", "remoteControl", "staName", "rename", "staPassword", "password",
+            "sim_apn", "sim_acount", "sim_passwd"
+    };
+    private String[] paramIndexlistName = {
+            "cameraModeIndex", "photoSizeIndex", "photoBurstIndex", "burstSpeedIndex", "sendingOptionIndex", "shutterSpeedIndex", "flashPowerIndex", "videoSizeIndex", "videoLengthIndex", "triggerSenIndex", "triggerPirIndex", "triggerTimelapseIndex", "sendModeIndex",
+            "staPasswdIndex", "remoteControlIndex", "staNameIndex"
+    };
+    //    private String[] paramlistValue ={
+//            cameraMode,photoSize,photoBurst,burstSpeed,sendingOption,shutterSpeed,flashPower,videoSize,videoLength,
+//            triggerSen,triggerPir,triggerTimelapse,sendMode,remoteControl,staName+"",rename,staPassword + "",password,
+//            sim_apn,sim_acount,sim_passwd
+//    };
     private int videoLengthIndex, videoSizeIndex, cameraModeIndex, photoSizeIndex, photoBurstIndex, burstSpeedIndex, sendingOptionIndex,
-            shutterSpeedIndex, flashPowerIndex, triggerSenIndex, triggerPirIndex, triggerTimelapseIndex, remoteControlIndex,sendModeIndex,staNameIndex,staPasswdIndex;
+            shutterSpeedIndex, flashPowerIndex, triggerSenIndex, triggerPirIndex, triggerTimelapseIndex, remoteControlIndex, sendModeIndex, staNameIndex, staPasswdIndex;
     private String[] camerModeList = new String[]{"photo", "video"};
     private String[] photoSizeList = new String[]{"1080P", "3MP", "5MP"};
     private String[] photoBurstList = new String[]{"1photo", "2photos", "3photos", "4photos", "5photos", "6photos", "7photos", "8photos", "9photos", "10photos"};
@@ -53,7 +71,7 @@ public class DataApplication {
             "20Sec", "25Sec", "30Sec", "35Sec", "40Sec", "45Sec", "50Sec", "55Sec",
             "1min", "2min", "3min", "4min", "5min", "10min", "15min", "20min",
             "25min", "30min", "35min", "40min", "45min", "50min", "55min", "1Hour",
-            "2Hour", "3Hour", "4Hour", "5Hour", "6Hour", "7Hour", "8Hour", "12Hour","16Hour", "20Hour", "24Hour"
+            "2Hour", "3Hour", "4Hour", "5Hour", "6Hour", "7Hour", "8Hour", "12Hour", "16Hour", "20Hour", "24Hour"
     };
     private String[] remoteControlList = new String[]{"Realtime", "Delay 0.5H", "Delay 1H", "Delay 2H", "Delay 3H", "Delay 4H", "Delay 6H", "Delay 12H", "Delay 24H"};
 
@@ -147,9 +165,9 @@ public class DataApplication {
         this.burstSpeed = "Fast(200ms)";
         this.burstSpeedIndex = 0;
         this.sendingOption = "1st";
-        this.sendingOptionIndex=0;
+        this.sendingOptionIndex = 0;
         this.shutterSpeed = "normal";
-        this.shutterSpeedIndex=0;
+        this.shutterSpeedIndex = 0;
         this.flashPower = "normal";
         this.flashPowerIndex = 0;
         this.videoSize = "D1";
@@ -164,13 +182,13 @@ public class DataApplication {
         this.sendModeIndex = 0;
         this.remoteControl = "Delay 0.5H";
         this.remoteControlIndex = 1;
-        this.staName = false;
+        this.staName = "false";
         this.staNameIndex = 0;
         this.rename = "";
-        this.overWrite = false;
+        this.overWrite = "false";
         this.triggerSen = "Auto";
         this.triggerSenIndex = 2;
-        this.staPassword = false;
+        this.staPassword = "false";
         this.staPasswdIndex = 0;
         this.password = "";
         this.PORT = 5001;
@@ -179,12 +197,34 @@ public class DataApplication {
         this.sim_acount = "";
         this.sim_passwd = "";
         this.protecte = false;
+
     }
+
+    //获取本地存储数据
+    public void getSetting(Context context) {
+        sharedPreferences = context.getSharedPreferences("Data", Context.MODE_PRIVATE);
+        sharEdit = sharedPreferences.edit();
+        if(sharedPreferences.getString("isLocation", null) ==null){
+            System.out.println("初始化");
+            defaultSetting();
+            updataLocation();           //把当前设置全都保存
+            sharEdit.putString("isLocation","false");
+        }else{
+            for(int i =0;i<paramlistName.length;i++){
+               setValue(paramlistName[i],sharedPreferences.getString(paramlistName[i],""));
+            }
+            for(int i =0;i<paramIndexlistName.length;i++){
+                setIndexValue(paramIndexlistName[i],sharedPreferences.getInt(paramIndexlistName[i],0));
+            }
+        }
+    }
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor sharEdit;
 
     public DataApplication(Context context) {
         this.context = context;
     }
-
     public DataApplication() {
 
     }
@@ -267,15 +307,7 @@ public class DataApplication {
     }
 
     public String getRename() {
-        if (staName) {
-            if (rename.equals("")) {
-                rename = "";
-            }
-            return rename;
-        } else {
-            return "";
-        }
-
+        return rename;
     }
 
     public void setPhotoSize(String photoSize) {
@@ -348,6 +380,7 @@ public class DataApplication {
 
     public void setCameraMode(String value) {
         this.cameraMode = value;
+
     }
 
     public String getCameraMode() {
@@ -361,6 +394,7 @@ public class DataApplication {
      * @param value
      */
     public static void setValue(String key, String value) {
+        System.out.println("使用setValue的key:"+key+",value:"+value);
         switch (key) {
             case "retServer":
                 dataApplication.setServerMeg(value);
@@ -382,6 +416,12 @@ public class DataApplication {
             case "burstSpeed":
                 dataApplication.setBurstSpeed(value);
                 break;
+            case "staName":
+                dataApplication.setStaName(value);
+                break;
+            case "staPassword":
+                dataApplication.setStaPassword(value);
+                break;
             case "sendingOption":
                 dataApplication.setSendingOption(value);
                 break;
@@ -391,14 +431,23 @@ public class DataApplication {
             case "flashPower":
                 dataApplication.setFlashPower(value);
                 break;
-            case "spinner_triggerSen":
+            case "triggerSen":
                 dataApplication.setTriggerSen(value);
                 break;
             case "triggerPir":
                 dataApplication.setTriggerPir(value);
                 break;
-            case "spinner_triggerTimeLapse":
+            case "triggerTimeLapse":
                 dataApplication.setTriggerTimelapse(value);
+                break;
+            case "sim_apn":
+                dataApplication.setSim_apn(value);
+                break;
+            case "sim_acount":
+                dataApplication.setSim_acount(value);
+                break;
+            case "sim_passwd":
+                dataApplication.setSim_passwd(value);
                 break;
             case "rename":
                 dataApplication.setRename(value);
@@ -414,6 +463,139 @@ public class DataApplication {
                 break;
         }
     }
+
+    public static void setIndexValue(String key, int value) {
+        switch (key) {
+            case "cameraModeIndex":
+                dataApplication.setCameraModeIndex(value);
+                break;
+            case "photoSizeIndex":
+                dataApplication.setPhotoSizeIndex(value);
+                break;
+            case "photoBurstIndex":
+                dataApplication.setPhotoBurstIndex(value);
+                break;
+            case "burstSpeedIndex":
+                dataApplication.setBurstSpeedIndex(value);
+                break;
+            case "sendingOptionIndex":
+                dataApplication.setSendingOptionIndex(value);
+                break;
+            case "shutterSpeedIndex":
+                dataApplication.setShutterSpeedIndex(value);
+                break;
+            case "flashPowerIndex":
+                dataApplication.setFlashPowerIndex(value);
+                break;
+            case "videoSizeIndex":
+                dataApplication.setVideoSizeIndex(value);
+                break;
+            case "videoLengthIndex":
+                dataApplication.setVideoLengthIndex(value);
+                break;
+            case "triggerSenIndex":
+                dataApplication.setTriggerSenIndex(value);
+                break;
+            case "triggerPirIndex":
+                dataApplication.setTriggerPirIndex(value);
+                break;
+            case "triggerTimelapseIndex":
+                dataApplication.setTriggerTimelapseIndex(value);
+                break;
+            case "sendModeIndex":
+                dataApplication.setSendModeIndex(value);
+                break;
+            case "staPasswdIndex":
+                dataApplication.setStaPasswordIndex(value);
+                break;
+            case "remoteControlIndex":
+                dataApplication.setRemoteControlIndex(value);
+                break;
+            case "staNameIndex":
+                dataApplication.setStaNameIndex(value);
+                break;
+        }
+    }
+
+    public static int getIndexValue(String key) {
+        int result = 0;
+        switch (key) {
+            case "cameraModeIndex":
+                result = dataApplication.getCameraModeIndex();
+                break;
+            case "photoSizeIndex":
+                result = dataApplication.getPhotoSizeIndex();
+                break;
+            case "photoBurstIndex":
+                result = dataApplication.getPhotoBurstIndex();
+                break;
+            case "burstSpeedIndex":
+                result = dataApplication.getBurstSpeedIndex();
+                break;
+            case "sendingOptionIndex":
+                result = dataApplication.getSendingOptionIndex();
+                break;
+            case "shutterSpeedIndex":
+                result = dataApplication.getShutterSpeedIndex();
+                break;
+            case "flashPowerIndex":
+                result = dataApplication.getFlashPowerIndex();
+                break;
+            case "videoSizeIndex":
+                result = dataApplication.getVideoSizeIndex();
+                break;
+            case "videoLengthIndex":
+                result = dataApplication.getVideoLengthIndex();
+                break;
+            case "triggerSenIndex":
+                result = dataApplication.getTriggerSenIndex();
+                break;
+            case "triggerPirIndex":
+                result = dataApplication.getTriggerPirIndex();
+                break;
+            case "triggerTimelapseIndex":
+                result = dataApplication.getTriggerTimelapseIndex();
+                break;
+            case "sendModeIndex":
+                result = dataApplication.getSendModeIndex();
+                break;
+            case "staPasswdIndex":
+                result = dataApplication.getStaPasswordIndex();
+                break;
+            case "remoteControlIndex":
+                result = dataApplication.getRemoteControlIndex();
+                break;
+            case "staNameIndex":
+                result = dataApplication.getStaNameIndex();
+                break;
+        }
+        return result;
+    }
+
+    public int getStaNameIndex() {
+        return staNameIndex;
+    }
+
+    public int getStaPasswordIndex() {
+        return staPasswdIndex;
+    }
+
+    private int getSendModeIndex() {
+        return sendModeIndex;
+    }
+
+    public void setStaPasswordIndex(int value) {
+        this.staPasswdIndex = value;
+    }
+
+    public void setStaNameIndex(int value) {
+        this.staNameIndex = value;
+    }
+
+    private void setSendModeIndex(int value) {
+        this.sendModeIndex = value;
+    }
+
 
     /**
      * 根据传入的键，获取值
@@ -435,6 +617,21 @@ public class DataApplication {
                 break;
             case "videoLength":
                 value = dataApplication.getVideoLength();
+                break;
+            case "triggerSen":
+                value = dataApplication.getTriggerSen();
+                break;
+            case "triggerPir":
+                value = dataApplication.getTriggerPir();
+                break;
+            case "staName":
+                value = dataApplication.getStaRename();
+                break;
+            case "staPassword":
+                value = dataApplication.getStaPassword();
+                break;
+            case "triggerTimelapse":
+                value = dataApplication.getTriggerTimelapse();
                 break;
             case "photoSize":
                 value = dataApplication.getPhotoSize();
@@ -485,38 +682,33 @@ public class DataApplication {
     }
 
     public String getPassword() {
-        if (password.equals("")) {
-            password = "";
-        }
         return password;
     }
 
-    public void setStaName(Boolean value) {
+    public void setStaName(String value) {
         staName = value;
     }
 
-    public void setStaPassword(Boolean value) {
+    public void setStaPassword(String value) {
         staPassword = value;
     }
 
-    public int getStaRename() {
-        return staName ? 1 : 0;
+    public String getStaRename() {
+//        System.out.println("当前设置为："+staName);
+//        return 0;
+        return staName;
     }
 
-    public int getStaPassword() {
-        return staPassword ? 1 : 0;
+    public String getStaPassword() {
+        return staPassword;
     }
 
-    public void setOverWrite(Boolean value) {
+    public void setOverWrite(String value) {
         overWrite = value;
     }
 
     public int getOverWrite() {
-        if (overWrite) {          //如果overWrite = on时为1；
-            return 1;
-        } else {
-            return 0;
-        }
+        return overWrite =="true"? 1 : 0;
     }
 
     List<char[]> list;
@@ -623,108 +815,108 @@ public class DataApplication {
      * 把参数都转换成字节数组；
      * @return
      */
-    public byte[] getCharCam() {
-        list = new ArrayList<>();
-        byte charCam = getByteWithPar("cameraMode", cameraMode);
-        byte charPhotoSize = getByteWithPar("photoSize", photoSize);
-        byte charPhotoBurst = getByteWithPar("photoBurst", photoBurst);
-        byte charBurstSpeed = getByteWithPar("burstSpeed", burstSpeed);
-        byte charSendingOption = getByteWithPar("sendingOption", sendingOption);
-        byte charShutterSpeed = getByteWithPar("shutterSpeed", shutterSpeed);
-        byte charFlashPower = getByteWithPar("flashPower", flashPower);
-        byte charVideoSize = getByteWithPar("videoSize", videoSize);
-        byte charVideoLength = getByteWithPar("videoLength", videoLength);
-        byte charTriggerSen = getByteWithPar("triggerSen", triggerSen);
-        byte charTriggerPir = getByteWithPar("triggerPir", triggerPir);
-        byte charTriggerTimelapse = getByteWithPar("triggerTimelapse", triggerTimelapse);
-        byte charSendMode = getByteWithPar("sendMode", sendMode);
-        byte charRemoteControl = getByteWithPar("remoteControl", remoteControl);
-        byte charStaName = getByteWithPar("staName", staName + "");
-        byte charStaPassword = getByteWithPar("staPassword", staPassword + "");
-
-        System.out.println("charCam:" + charCam + "   cameraMode：" + cameraMode);
-        System.out.println("charPhotoSize:" + charPhotoSize + "   photoSize：" + photoSize);
-        System.out.println("charPhotoBurst:" + charPhotoBurst + "   photoBurst：" + photoBurst);
-        System.out.println("charBurstSpeed:" + charBurstSpeed + "   burstSpeed：" + burstSpeed);
-        System.out.println("charSendingOption:" + charSendingOption + "   sendingOption：" + sendingOption);
-        System.out.println("charShutterSpeed:" + charShutterSpeed + "   shutterSpeed：" + shutterSpeed);
-        System.out.println("charFlashPower:" + charFlashPower + "   flashPower：" + flashPower);
-        System.out.println("charVideoSize:" + charVideoSize + "   videoSize：" + videoSize);
-        System.out.println("charVideoLength:" + charVideoLength + "   videoLength：" + videoLength);
-        System.out.println("charTriggerSen:" + charTriggerSen + "   triggerSen：" + triggerSen);
-        System.out.println("charTriggerPir:" + charTriggerPir + "   triggerPir：" + triggerPir);
-        System.out.println("charTriggerTimelapse:" + charTriggerTimelapse + "   triggerTimelapse：" + triggerTimelapse);
-        System.out.println("charSendMode:" + charSendMode + "   sendMode：" + sendMode);
-        System.out.println("charRemoteControl:" + charRemoteControl + "   remoteControl：" + remoteControl);
-        System.out.println("charStaName:" + charStaName + "   staName：" + staName);
-        System.out.println("rename:" + rename + "   rename：" + rename);
-        System.out.println("charStaPassword:" + charStaPassword + "   staPassword：" + staPassword);
-        System.out.println("password:" + password + "   password：" + password);
-        System.out.println("sim_apn:" + sim_apn + "   sim_apn：" + sim_apn);
-        System.out.println("sim_acount:" + sim_acount + "   sim_acount：" + sim_acount);
-        System.out.println("sim_passwd:" + sim_passwd + "   sim_passwd：" + sim_passwd);
-
-        byte[] bytes = new byte[]{charCam,charPhotoSize,charPhotoBurst,charBurstSpeed,charSendingOption,charShutterSpeed,charFlashPower,charVideoSize
-                                    ,charVideoLength,charTriggerSen,charTriggerPir,charTriggerTimelapse,charSendMode,charRemoteControl,charStaName,
-                                };
-        utils = new Utils(context);
-        int renameLen = rename.getBytes().length;        //实际
-        for(int i =0;i<Rename.length;i++){
-            if(i<renameLen){
-                Rename[i] = rename.getBytes()[i];
-            }else{
-                Rename[i]=0;
-            }
-        }
-        resultByte= utils.byteMerger(bytes,Rename);
-
-        resultByte= utils.byteMerger(resultByte,new byte[]{charStaPassword});
-
-        int passwdLen = password.getBytes().length;        //实际
-        for(int i =0;i<Passwd.length;i++){
-            if(i<passwdLen){
-                Passwd[i] = password.getBytes()[i];
-            }else{
-                Passwd[i]=0;
-            }
-        }
-       resultByte= utils.byteMerger(resultByte,Passwd);
-
-        int len = sim_apn.getBytes().length;        //实际
-        for(int i =0;i<32;i++){
-            if(i<len){
-                Sim_apn[i] = sim_apn.getBytes()[i];
-            }else{
-                Sim_apn[i]=0;
-            }
-        }
-        resultByte= utils.byteMerger(resultByte,Sim_apn);
-
-        len = sim_acount.getBytes().length;        //实际
-        for(int i =0;i<32;i++){
-            if(i<len){
-                Sim_acount[i] = sim_acount.getBytes()[i];
-            }else{
-                Sim_acount[i]=0;
-            }
-        }
-
-        resultByte= utils.byteMerger(resultByte,Sim_acount);
-
-        len = sim_passwd.getBytes().length;        //实际
-        for(int i =0;i<32;i++){
-            if(i<len){
-                Sim_passwd[i] = sim_passwd.getBytes()[i];
-            }else{
-                Sim_passwd[i]=0;
-            }
-        }
-
-        resultByte= utils.byteMerger(resultByte,Sim_passwd);
-
-
-        return resultByte;
-    }
+//    public byte[] getCharCam() {
+//        list = new ArrayList<>();
+//        byte charCam = getByteWithPar("cameraMode", cameraMode);
+//        byte charPhotoSize = getByteWithPar("photoSize", photoSize);
+//        byte charPhotoBurst = getByteWithPar("photoBurst", photoBurst);
+//        byte charBurstSpeed = getByteWithPar("burstSpeed", burstSpeed);
+//        byte charSendingOption = getByteWithPar("sendingOption", sendingOption);
+//        byte charShutterSpeed = getByteWithPar("shutterSpeed", shutterSpeed);
+//        byte charFlashPower = getByteWithPar("flashPower", flashPower);
+//        byte charVideoSize = getByteWithPar("videoSize", videoSize);
+//        byte charVideoLength = getByteWithPar("videoLength", videoLength);
+//        byte charTriggerSen = getByteWithPar("triggerSen", triggerSen);
+//        byte charTriggerPir = getByteWithPar("triggerPir", triggerPir);
+//        byte charTriggerTimelapse = getByteWithPar("triggerTimelapse", triggerTimelapse);
+//        byte charSendMode = getByteWithPar("sendMode", sendMode);
+//        byte charRemoteControl = getByteWithPar("remoteControl", remoteControl);
+//        byte charStaName = getByteWithPar("staName", staName + "");
+//        byte charStaPassword = getByteWithPar("staPassword", staPassword + "");
+//
+//        System.out.println("charCam:" + charCam + "   cameraMode：" + cameraMode);
+//        System.out.println("charPhotoSize:" + charPhotoSize + "   photoSize：" + photoSize);
+//        System.out.println("charPhotoBurst:" + charPhotoBurst + "   photoBurst：" + photoBurst);
+//        System.out.println("charBurstSpeed:" + charBurstSpeed + "   burstSpeed：" + burstSpeed);
+//        System.out.println("charSendingOption:" + charSendingOption + "   sendingOption：" + sendingOption);
+//        System.out.println("charShutterSpeed:" + charShutterSpeed + "   shutterSpeed：" + shutterSpeed);
+//        System.out.println("charFlashPower:" + charFlashPower + "   flashPower：" + flashPower);
+//        System.out.println("charVideoSize:" + charVideoSize + "   videoSize：" + videoSize);
+//        System.out.println("charVideoLength:" + charVideoLength + "   videoLength：" + videoLength);
+//        System.out.println("charTriggerSen:" + charTriggerSen + "   triggerSen：" + triggerSen);
+//        System.out.println("charTriggerPir:" + charTriggerPir + "   triggerPir：" + triggerPir);
+//        System.out.println("charTriggerTimelapse:" + charTriggerTimelapse + "   triggerTimelapse：" + triggerTimelapse);
+//        System.out.println("charSendMode:" + charSendMode + "   sendMode：" + sendMode);
+//        System.out.println("charRemoteControl:" + charRemoteControl + "   remoteControl：" + remoteControl);
+//        System.out.println("charStaName:" + charStaName + "   staName：" + staName);
+//        System.out.println("rename:" + rename + "   rename：" + rename);
+//        System.out.println("charStaPassword:" + charStaPassword + "   staPassword：" + staPassword);
+//        System.out.println("password:" + password + "   password：" + password);
+//        System.out.println("sim_apn:" + sim_apn + "   sim_apn：" + sim_apn);
+//        System.out.println("sim_acount:" + sim_acount + "   sim_acount：" + sim_acount);
+//        System.out.println("sim_passwd:" + sim_passwd + "   sim_passwd：" + sim_passwd);
+//
+//        byte[] bytes = new byte[]{charCam,charPhotoSize,charPhotoBurst,charBurstSpeed,charSendingOption,charShutterSpeed,charFlashPower,charVideoSize
+//                                    ,charVideoLength,charTriggerSen,charTriggerPir,charTriggerTimelapse,charSendMode,charRemoteControl,charStaName,
+//                                };
+//        utils = new Utils(context);
+//        int renameLen = rename.getBytes().length;        //实际
+//        for(int i =0;i<Rename.length;i++){
+//            if(i<renameLen){
+//                Rename[i] = rename.getBytes()[i];
+//            }else{
+//                Rename[i]=0;
+//            }
+//        }
+//        resultByte= utils.byteMerger(bytes,Rename);
+//
+//        resultByte= utils.byteMerger(resultByte,new byte[]{charStaPassword});
+//
+//        int passwdLen = password.getBytes().length;        //实际
+//        for(int i =0;i<Passwd.length;i++){
+//            if(i<passwdLen){
+//                Passwd[i] = password.getBytes()[i];
+//            }else{
+//                Passwd[i]=0;
+//            }
+//        }
+//       resultByte= utils.byteMerger(resultByte,Passwd);
+//
+//        int len = sim_apn.getBytes().length;        //实际
+//        for(int i =0;i<32;i++){
+//            if(i<len){
+//                Sim_apn[i] = sim_apn.getBytes()[i];
+//            }else{
+//                Sim_apn[i]=0;
+//            }
+//        }
+//        resultByte= utils.byteMerger(resultByte,Sim_apn);
+//
+//        len = sim_acount.getBytes().length;        //实际
+//        for(int i =0;i<32;i++){
+//            if(i<len){
+//                Sim_acount[i] = sim_acount.getBytes()[i];
+//            }else{
+//                Sim_acount[i]=0;
+//            }
+//        }
+//
+//        resultByte= utils.byteMerger(resultByte,Sim_acount);
+//
+//        len = sim_passwd.getBytes().length;        //实际
+//        for(int i =0;i<32;i++){
+//            if(i<len){
+//                Sim_passwd[i] = sim_passwd.getBytes()[i];
+//            }else{
+//                Sim_passwd[i]=0;
+//            }
+//        }
+//
+//        resultByte= utils.byteMerger(resultByte,Sim_passwd);
+//
+//
+//        return resultByte;
+//    }
 
 
     /**
@@ -734,9 +926,8 @@ public class DataApplication {
      */
     public byte[] getCharCam2() {
         list = new ArrayList<>();
+        System.out.println(sendMode);
         sendModeIndex = Integer.parseInt(sendMode);
-        staNameIndex = staName ?1:0;
-        staPasswdIndex = staName ?1:0;
 
         System.out.println("cameraModeIndex:" + cameraModeIndex + "   cameraMode：" + cameraMode);
         System.out.println("photoSizeIndex:" + photoSizeIndex + "   photoSize：" + photoSize);
@@ -760,34 +951,38 @@ public class DataApplication {
         System.out.println("sim_acount:" + sim_acount + "   sim_acount：" + sim_acount);
         System.out.println("sim_passwd:" + sim_passwd + "   sim_passwd：" + sim_passwd);
 
-        byte[] bytes = new byte[]{(byte)cameraModeIndex, (byte)photoSizeIndex, (byte)photoBurstIndex,(byte) burstSpeedIndex, (byte)sendingOptionIndex,(byte) shutterSpeedIndex, (byte)flashPowerIndex,  (byte)videoSizeIndex
-                , (byte)videoLengthIndex,(byte) triggerSenIndex,(byte) triggerPirIndex,(byte) triggerTimelapseIndex, (byte)sendModeIndex, (byte)remoteControlIndex,(byte)staNameIndex
+        byte[] bytes = new byte[]{(byte) cameraModeIndex, (byte) photoSizeIndex, (byte) photoBurstIndex, (byte) burstSpeedIndex, (byte) sendingOptionIndex, (byte) shutterSpeedIndex, (byte) flashPowerIndex, (byte) videoSizeIndex
+                , (byte) videoLengthIndex, (byte) triggerSenIndex, (byte) triggerPirIndex, (byte) triggerTimelapseIndex, (byte) sendModeIndex, (byte) remoteControlIndex, (byte) staNameIndex
         };
 
+
         utils = new Utils(context);
-    //进行补0操作
-        Rename =  utils.createByte(rename,Rename.length);
+        //进行补0操作
+        Rename = utils.createByte(rename, Rename.length);
         resultByte = utils.byteMerger(bytes, Rename);
 
-        resultByte = utils.byteMerger(resultByte, new byte[]{(byte)staPasswdIndex});
+        resultByte = utils.byteMerger(resultByte, new byte[]{(byte) staPasswdIndex});
 
-        Passwd =  utils.createByte(password,Passwd.length);
+        Passwd = utils.createByte(password, Passwd.length);
         resultByte = utils.byteMerger(resultByte, Passwd);
 
-        Sim_apn =  utils.createByte(sim_apn,Sim_apn.length);
-        resultByte= utils.byteMerger(resultByte,Sim_apn);
+//        System.out.println("当前内容为："+Sim_apn);
 
-        Sim_acount =  utils.createByte(sim_acount,Sim_acount.length);
-        resultByte= utils.byteMerger(resultByte,Sim_acount);
+        Sim_apn = utils.createByte(sim_apn, Sim_apn.length);
+        resultByte = utils.byteMerger(resultByte, Sim_apn);
 
-        Sim_passwd =  utils.createByte(sim_passwd,Sim_passwd.length);
-        resultByte= utils.byteMerger(resultByte,Sim_passwd);
+        Sim_acount = utils.createByte(sim_acount, Sim_acount.length);
+        resultByte = utils.byteMerger(resultByte, Sim_acount);
+
+        Sim_passwd = utils.createByte(sim_passwd, Sim_passwd.length);
+        resultByte = utils.byteMerger(resultByte, Sim_passwd);
         return resultByte;
     }
 
 
     /**
      * 把相机参数转化成整型；
+     *
      * @param key
      * @param value
      * @return
@@ -1290,7 +1485,6 @@ public class DataApplication {
                 break;
         }
         String newresult = Integer.toHexString(result);     //转成十六进制数
-
         return result;
     }
 
@@ -2488,6 +2682,28 @@ public class DataApplication {
     public void setRemoteControlIndex(int remoteControlIndex) {
         this.remoteControlIndex = remoteControlIndex;
     }
+
+    public void updataLocation(){
+        for(int i=0;i<paramlistName.length;i++){
+            sharEdit.putString(paramlistName[i],getValue(paramlistName[i]));
+        }
+        for(int i=0;i<paramIndexlistName.length;i++){
+            sharEdit.putInt(paramIndexlistName[i],getIndexValue(paramIndexlistName[i]));
+            System.out.println(paramIndexlistName[i]+":"+getIndexValue(paramIndexlistName[i]));
+        }
+        sharEdit.putString("isLocation","true");
+        sharEdit.commit();
+    }
+
+    public void saveString(String key,String value){
+        sharEdit.putString(key,value);
+        sharEdit.commit();
+    }
+    public void saveInt(String key,Integer value){
+        sharEdit.putInt(key,value);
+        sharEdit.commit();
+    }
+
 
 
 }

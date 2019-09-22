@@ -42,7 +42,7 @@ public class CappamActivity extends FragmentActivity implements View.OnClickList
             textView_worktime1, textView_worktime2, textView_worktime3, textView_worktime4;
     private Spinner textView_control, textView_sendmode;
     private DataApplication dataApplication;
-    private int sta_name, sta_password, sta_overWrite;
+    private String sta_name, sta_password, sta_overWrite;
     char[] value10, value11;
     private EditText edit_ip, edit_port;
     private TextView mTextView;
@@ -227,7 +227,7 @@ public class CappamActivity extends FragmentActivity implements View.OnClickList
         rename = dataApplication.getRename();
         sta_name = dataApplication.getStaRename();
         sta_password = dataApplication.getStaPassword();
-        sta_overWrite = dataApplication.getOverWrite();
+//        sta_overWrite = dataApplication.getOverWrite();
     }
 
     @Override

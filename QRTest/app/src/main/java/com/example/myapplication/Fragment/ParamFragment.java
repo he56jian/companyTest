@@ -62,7 +62,7 @@ public class ParamFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
         utils = new Utils(context);
         dataApplication = new DataApplication(context).getDataApplication();
-        dataApplication.defaultSetting();       //给相机设置默认值
+        dataApplication.getSetting(context);
         init();
     }
 
@@ -261,10 +261,10 @@ public class ParamFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        if(dataApplication.getProtecte()){
-            char [] arr = new char[]{'#','0','4','#'};
-            ChatManager.getCM().sendCharToStream(arr,true);
-        }
+//        if(dataApplication.getProtecte()){
+//            char [] arr = new char[]{'#','0','4','#'};
+//            ChatManager.getCM().sendCharToStream(arr,true);
+//        }
     }
 
     @Override
