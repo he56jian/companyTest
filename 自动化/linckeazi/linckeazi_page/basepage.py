@@ -22,27 +22,27 @@ class BasePage:
             # 进入消息页面
             return MessagePage()
 
-    def goto_supportpage(self):
-        if self._currentpage != 'supportpage':
-            # 进入建议帮助界面
-            return SupportPage()
-
-    def goto_settingpage(self):
-        if self._currentpage != 'settingpage':
-            # 进入设置页面
-            return SettingsPage(self._currentDeviceID)
-
-    def goto_superviewpage(self):
-        if self._currentpage != 'superviewpage':
-            # 进入超级视图界面
-            return SuperViewPage()
-
-    def goto_locationpage(self):
-        if self._currentpage != 'locationpage':
-            # 进入地图界面
-            return LocationPage()
-
-    def goto_accountpage(self):
-        if self._currentpage != 'accountpage':
-            # 进入地图界面
-            return AccountPage()
+    # def goto_supportpage(self):
+    #     if self._currentpage != 'supportpage':
+    #         # 进入建议帮助界面
+    #         return SupportPage()
+    #
+    # def goto_settingpage(self):
+    #     if self._currentpage != 'settingpage':
+    #         # 进入设置页面
+    #         return SettingsPage(self._currentDeviceID)
+    #
+    # def goto_superviewpage(self):
+    #     if self._currentpage != 'superviewpage':
+    #         # 进入超级视图界面
+    #         return SuperViewPage()
+    #
+    # def goto_locationpage(self):
+    #     if self._currentpage != 'locationpage':
+    #         # 进入地图界面
+    #         return LocationPage()
+    #
+    # def goto_accountpage(self):
+    #     if self._currentpage != 'accountpage':
+    #         # 进入地图界面
+    #         return AccountPage()
